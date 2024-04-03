@@ -109,6 +109,17 @@ DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL,engine="django.contrib.gis.db.backends.postgis")
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'admin',
+#         'USER': 'admin',
+#         'PASSWORD': 'admin',
+#         'HOST': 'postgres',
+#         'PORT': '5432',
+#     }
+# }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

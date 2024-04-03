@@ -1,20 +1,41 @@
 version: '3'
 
 services:
-  web:
-    build: .
+  vroomvroom:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     depends_on:
-      - db
-  db:
-    image: postgres:latest
+      - redis
+      - postgres
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: vv
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      DATABASE_URL: postgres://root:root@db:5432/vv
+      - REDIS_HOST=redis
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/static
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB_URL: ${DATABASE_URL}
+      # POSTGRES_PASSWORD: admin
+      # POSTGRES_DB: admin
+      # POSTGRES_USER: admin
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+
+volumes:
+  postgres_data:
