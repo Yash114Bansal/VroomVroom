@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11
 
 WORKDIR /usr/src/app
 
@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils\
     libproj-dev \
     gdal-bin \
     libgdal-dev \
+    postgresql-client \
     postgis*
 
 RUN apt update && apt install postgis -y
