@@ -13,6 +13,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from accounts.utils import send_push_notification
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -43,13 +44,16 @@ class RideViewSet(viewsets.ModelViewSet):
         if request.user != instance.user:
             return Response({'error': 'You do not have permission to delete this ride.'}, status=status.HTTP_403_FORBIDDEN)
         
-        # TODO Inform All Users That ride has been canceled
+        
+        send_push_notification(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=instance.passengers)
         
         self.perform_destroy(instance)
         return Response({'message': 'Ride successfully deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, *args, **kwargs):
-        # TODO  Inform All Users That ride has been Updated
+        instance = self.get_object()
+
+        send_push_notification(title="Ride Cancelled!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=instance.passengers)
         return super().update(request, *args, **kwargs)
 
 class RideSearchView(GenericAPIView):
