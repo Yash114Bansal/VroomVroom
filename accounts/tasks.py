@@ -1,6 +1,8 @@
 import requests
 from django.conf import settings
+from celery import shared_task
 
+@shared_task
 def send_push_notification(title, body, users):
     headers = {
         "Content-Type": "application/json",
@@ -10,7 +12,6 @@ def send_push_notification(title, body, users):
     for user in users:
         title_formatted = title.replace("{name}", user.name)
         body_formatted = body.replace("{name}", user.name)
-        
         if user.fcm_token:
             data = {
                 "to": user.fcm_token,

@@ -13,7 +13,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
-from accounts.utils import send_push_notification
+from accounts.tasks import send_push_notification
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -44,16 +44,16 @@ class RideViewSet(viewsets.ModelViewSet):
         if request.user != instance.user:
             return Response({'error': 'You do not have permission to delete this ride.'}, status=status.HTTP_403_FORBIDDEN)
         
-        
-        send_push_notification(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=instance.passengers)
+        passengers_data = list(instance.passengers.all().values('fcm_token', 'name'))
+        send_push_notification.delay(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=passengers_data)
         
         self.perform_destroy(instance)
         return Response({'message': 'Ride successfully deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-
-        send_push_notification(title="Ride Cancelled!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=instance.passengers)
+        passengers_data = list(instance.passengers.all().values('fcm_token', 'name'))
+        send_push_notification.delay(title="Ride Updated!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=passengers_data)
         return super().update(request, *args, **kwargs)
 
 class RideSearchView(GenericAPIView):
