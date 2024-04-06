@@ -1,7 +1,9 @@
 import requests
 from django.core.mail import send_mail
 from django.conf import settings
+from celery import shared_task
 
+@shared_task
 def send_welcome_email(otp, email):
     subject = "Welcome to VroomVroom - Your AKGEC Ride-Sharing Experience Begins!"
     
@@ -32,6 +34,7 @@ def send_welcome_email(otp, email):
 
     return send_mail(subject, '', from_email, recipient_list, html_message=message)
 
+@shared_task
 def send_forget_password_email(otp, email):
     subject = "VroomVroom - Password Reset Request"
 
@@ -60,7 +63,7 @@ def send_forget_password_email(otp, email):
 
     return send_mail(subject, '', from_email, recipient_list, html_message=message)
 
-
+@shared_task
 def send_mobile_otp(otp,mobile_number):
     r = requests.get(f"https://2factor.in/API/V1/{settings.OTP_API_KEY}/SMS/{mobile_number}/{otp}/")
     if r.status_code == 200:

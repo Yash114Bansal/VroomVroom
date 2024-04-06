@@ -109,6 +109,17 @@ DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL,engine="django.contrib.gis.db.backends.postgis")
 }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'admin',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'postgres',
+        'PORT': '5432',
+    }
+}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -143,10 +154,12 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 SIMPLE_JWT = {
     "USER_ID_FIELD": "email",
@@ -184,5 +197,7 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+FCM_API_KEY = config("FCM_API_KEY")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

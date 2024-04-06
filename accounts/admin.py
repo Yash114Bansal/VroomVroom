@@ -26,10 +26,13 @@ class UserProfileAdmin(BaseImportExportAdmin):
         "verified_driver",
         "age",
         "gender",
+        "subscribed_to_email",
+        "fcm_token"
     )
     resource_class = UserProfileResource
 
     def save_model(self, request, obj, form, change):
+        if 'password' in form.changed_data:
+            obj.set_password(form.cleaned_data["password"])
 
-        obj.set_password(form.cleaned_data["password"])
         super().save_model(request, obj, form, change)
