@@ -37,7 +37,9 @@ class UserProfile(AbstractUser):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
 
     verified_driver = models.BooleanField(default=False)
-
+    fcm_token = models.CharField(max_length=255, blank=True, null=True)
+    subscribed_to_email = models.BooleanField(default=True)
+    
     groups = models.ManyToManyField(Group, related_name='user_profiles')
     user_permissions = models.ManyToManyField(Permission, related_name='user_profiles')
 
