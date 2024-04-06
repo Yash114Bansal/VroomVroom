@@ -15,7 +15,7 @@ from social_core.exceptions import AuthForbidden
 from requests.exceptions import HTTPError
 from .models import OTP, ResetPasswordModel
 from .throttles import ResendOTPRateThrottle
-from .utils import (
+from .tasks import (
     send_welcome_email,
     send_mobile_otp,
     send_forget_password_email,
@@ -72,15 +72,11 @@ class RegisterView(GenericAPIView):
         # Generate a random OTP and send a welcome email
         otp = randint(100000, 999999)
         expiry_time = timezone.now() + timezone.timedelta(minutes=5)
-        if send_welcome_email(otp, email) == 1:
-            OTP.objects.create(
+        
+        send_welcome_email.delay(otp, email)
+        
+        OTP.objects.create(
                 user=user_profile, otp=otp, expiry_time=expiry_time, otp_type="email"
-            )
-        else:
-            # Email sending failed
-            return Response(
-                {"message": "Email sending failed"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
         # Generate access and refresh tokens
@@ -123,16 +119,11 @@ class ResendEmailVerificationView(APIView):
         otp = randint(100000, 999999)
         expiry_time = timezone.now() + timezone.timedelta(minutes=5)
 
-        if send_welcome_email(otp, request.user.email) == 1:
-            OTP.objects.create(
+        send_welcome_email.delay(otp, request.user.email)
+        OTP.objects.create(
                 user=request.user, otp=otp, expiry_time=expiry_time, otp_type="email"
             )
-        else:
-            # Email sending failed
-            return Response(
-                {"message": "Email sending failed"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+
 
         return Response(
             {"message": "OTP has been resent successfully"}, status=status.HTTP_200_OK
@@ -230,14 +221,9 @@ class SendPhoneOTPView(GenericAPIView):
         request.user.phone_number = phone_number
         request.user.save()
 
-        if send_mobile_otp(otp, phone_number) == 1:
-            OTP.objects.create(
+        send_mobile_otp.delay(otp, phone_number)
+        OTP.objects.create(
                 user=request.user, otp=otp, expiry_time=expiry_time, otp_type="phone"
-            )
-        else:
-            return Response(
-                {"message": "OTP sending failed"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
         return Response(
@@ -327,19 +313,13 @@ class ForgetPasswordEmailSendOTPView(GenericAPIView):
         otp = randint(100000, 999999)
         expiry_time = timezone.now() + timezone.timedelta(minutes=5)
         password_reset_token = generateToken(32)
-        if send_forget_password_email(otp, email) == 1:
-            ResetPasswordModel.objects.create(
+        send_forget_password_email.delay(otp, email)
+        ResetPasswordModel.objects.create(
                 user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
             )
-            return Response(
+        return Response(
                 {"message": "Email sent successfully", "token": password_reset_token},
                 status=status.HTTP_200_OK,
-            )
-        else:
-            # Email sending failed
-            return Response(
-                {"message": "Email sending failed"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -375,21 +355,14 @@ class ForgetPasswordPhoneSendOTPView(GenericAPIView):
         otp = randint(100000, 999999)
         expiry_time = timezone.now() + timezone.timedelta(minutes=5)
         password_reset_token = generateToken(32)
-        if send_mobile_otp(otp, phone_number) == 1:
-            ResetPasswordModel.objects.create(
+        send_mobile_otp.delay(otp, phone_number)
+        ResetPasswordModel.objects.create(
                 user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
             )
-            return Response(
+        return Response(
                 {"message": "OTP sent successfully", "token": password_reset_token},
                 status=status.HTTP_200_OK,
             )
-        else:
-            # OTP sending failed
-            return Response(
-                {"message": "OTP sending failed"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
 
 class ForgetPasswordVerifyOTPView(GenericAPIView):
 
