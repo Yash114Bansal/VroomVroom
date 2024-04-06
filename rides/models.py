@@ -16,6 +16,7 @@ class RideModel(models.Model):
     fare = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
     passengers = models.ManyToManyField(UserProfile, related_name='rides_as_passenger', blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming', null=True)
+    paid_by = models.ManyToManyField(UserProfile, related_name='paid_by', blank=True)
 
     def __str__(self):
         return f'Ride {self.id} by {self.user} - {self.get_status_display()}'

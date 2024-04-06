@@ -4,9 +4,9 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import viewsets
 from .models import RideModel
+from .permissions import PendingPaymentPermission
 from .serializers import MyRideSerializer, RideSearchSerializer, RideSerializer, RideViewSerializer
-from accounts.permissions import IsDriver
-from rest_framework.permissions import IsAuthenticated
+from accounts.permissions import IsDriver, BasePermission
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.gis.db.models.functions import Distance
@@ -44,21 +44,21 @@ class RideViewSet(viewsets.ModelViewSet):
         if request.user != instance.user:
             return Response({'error': 'You do not have permission to delete this ride.'}, status=status.HTTP_403_FORBIDDEN)
         
-        passengers_data = list(instance.passengers.all().values('fcm_token', 'name'))
-        send_push_notification.delay(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=passengers_data)
+        
+        send_push_notification(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=instance.passengers.all())
         
         self.perform_destroy(instance)
         return Response({'message': 'Ride successfully deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        passengers_data = list(instance.passengers.all().values('fcm_token', 'name'))
-        send_push_notification.delay(title="Ride Updated!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=passengers_data)
+
+        send_push_notification(title="Ride Cancelled!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=instance.passengers.all())
         return super().update(request, *args, **kwargs)
 
 class RideSearchView(GenericAPIView):
     serializer_class = RideSearchSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission, PendingPaymentPermission]
     authentication_classes = [JWTAuthentication]
     pagination_class = PageNumberPagination
 
@@ -137,7 +137,7 @@ class RideSearchView(GenericAPIView):
 
 class RideBookingView(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission, PendingPaymentPermission]
 
     def post(self, request, ride_id, *args, **kwargs):
         try:
@@ -167,7 +167,7 @@ class RideBookingView(APIView):
 
 class MyRideView(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
     serializer_class = MyRideSerializer
 
     def get_queryset(self):
@@ -175,7 +175,7 @@ class MyRideView(ListAPIView):
     
 class MyPastRideView(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [BasePermission]
     serializer_class = MyRideSerializer
 
     def get_queryset(self):
