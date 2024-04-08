@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import viewsets
 from .models import RideModel
@@ -173,7 +173,7 @@ class MyRideView(ListAPIView):
     def get_queryset(self):
         return RideModel.objects.filter(passengers=self.request.user, status__in=['upcoming', 'onway'])
     
-class MyPastRideView(ListAPIView):
+class MyPastRideView(ListAPIView,RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [BasePermission]
     serializer_class = MyRideSerializer
