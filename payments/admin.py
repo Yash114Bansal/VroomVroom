@@ -1,3 +1,7 @@
 from django.contrib import admin
+from accounts.admin import BaseImportExportAdmin
+from .models import PassengerPayment
 
-# Register your models here.
+@admin.register(PassengerPayment)
+class PassengerPaymentAdmin(BaseImportExportAdmin):
+    pass

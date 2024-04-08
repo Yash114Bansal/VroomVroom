@@ -14,6 +14,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from accounts.tasks import send_push_notification
+from accounts.serializers import UserFCMSerializer
 
 class RideViewSet(viewsets.ModelViewSet):
     """
@@ -44,16 +45,16 @@ class RideViewSet(viewsets.ModelViewSet):
         if request.user != instance.user:
             return Response({'error': 'You do not have permission to delete this ride.'}, status=status.HTTP_403_FORBIDDEN)
         
-        
-        send_push_notification(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=instance.passengers.all())
+        user_details = UserFCMSerializer(instance.passengers.all(), many=True).data
+        send_push_notification.delay(title="Ride Cancelled!!!!",body=r"Dear {name}, We are sorry to inform you, your ride has been cancelled by Captain.",users=user_details)
         
         self.perform_destroy(instance)
         return Response({'message': 'Ride successfully deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-
-        send_push_notification(title="Ride Cancelled!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=instance.passengers.all())
+        user_details = UserFCMSerializer(instance.passengers.all(), many=True).data
+        send_push_notification.delay(title="Ride Updated!!!!",body=r"Hey {name}, Your ride is updated, open the app to view changes",users=user_details)
         return super().update(request, *args, **kwargs)
 
 class RideSearchView(GenericAPIView):
@@ -177,7 +178,7 @@ class MyPastRideListView(ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [BasePermission]
     serializer_class = MyRideSerializer
- 
+
     def get_queryset(self):
         return RideModel.objects.filter(passengers=self.request.user, status='completed')
 

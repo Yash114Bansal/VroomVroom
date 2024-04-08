@@ -10,3 +10,8 @@ class EmailSubscriptionUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('subscribed_to_email',)
+
+class UserFCMSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('name', 'fcm_token')
