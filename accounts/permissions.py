@@ -1,15 +1,14 @@
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 
-class BasePermission(permissions.BasePermission):
+class BasePermission(permissions.IsAuthenticated):
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            raise PermissionDenied("You must be logged in.")
-        if not request.user.email_verified:
+
+        if request.user.is_authenticated and  not request.user.email_verified:
             raise PermissionDenied("Your email is not verified.")
-        if not request.user.phone_verified:
+        if request.user.is_authenticated and not request.user.phone_verified:
             raise PermissionDenied("Your phone is not verified.")
-        return True
+        return super().has_permission(request, view)
 
 class IsDriver(BasePermission):
     def has_permission(self, request, view):

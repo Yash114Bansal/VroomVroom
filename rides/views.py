@@ -173,7 +173,15 @@ class MyRideView(ListAPIView):
     def get_queryset(self):
         return RideModel.objects.filter(passengers=self.request.user, status__in=['upcoming', 'onway'])
     
-class MyPastRideView(ListAPIView,RetrieveAPIView):
+class MyPastRideListView(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [BasePermission]
+    serializer_class = MyRideSerializer
+ 
+    def get_queryset(self):
+        return RideModel.objects.filter(passengers=self.request.user, status='completed')
+
+class MyPastRideRetrieveView(RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [BasePermission]
     serializer_class = MyRideSerializer
