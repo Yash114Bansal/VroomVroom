@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from accounts.permissions import BasePermission
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rides.models import RideModel
 from .serializers import PassengerPaymentSerializer, PendingPaymentsSerializer
 from rest_framework.response import Response
@@ -11,23 +12,23 @@ from accounts.tasks import send_push_notification
 from accounts.serializers import UserFCMSerializer
 
 class PendingPaymentsListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = PendingPaymentsSerializer
     permission_classes = [BasePermission]
-
+    
     def get_queryset(self):
         user = self.request.user  
-        queryset = RideModel.objects.filter(passengers=user).exclude(paid_by=user)
+        queryset = RideModel.objects.filter(passengers=user).exclude(paid_by=user).order_by('id')
         return queryset
 
 class PassengerPaymentRequestView(generics.CreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [BasePermission]
     
     def create(self, request, ride_id,*args, **kwargs):
-        # ride_id = request.data.get('')
         passenger = request.user
         
-        print("Hiii Ride ID is ", ride_id)
         ride = get_object_or_404(RideModel, id=ride_id)
-        print(ride)
         if ride.status == 'upcoming':
             return Response({'message': 'Cannot request payment for upcoming ride.'}, status=status.HTTP_400_BAD_REQUEST)
         if passenger not in ride.passengers.all():
@@ -49,13 +50,19 @@ class PassengerPaymentRequestView(generics.CreateAPIView):
         return Response({'message': 'Passenger payment request created successfully.'}, status=status.HTTP_201_CREATED)
 
 class DriverPaymentRequestListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = PassengerPaymentSerializer
-
+    permission_classes = [BasePermission]
+    
     def get_queryset(self):
         driver = self.request.user
-        return PassengerPayment.objects.filter(ride__user=driver, cash_payment_verified=False)
+        queryset = PassengerPayment.objects.filter(ride__user=driver, cash_payment_verified=False).order_by('id')
+        return queryset
 
 class DriverPaymentRequestApprovalView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [BasePermission]
+    
     def post(self, request, ride_id, *args, **kwargs):
         try:
             payment_request = PassengerPayment.objects.get(ride__id=ride_id, cash_payment_verified=False)
