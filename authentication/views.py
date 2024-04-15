@@ -37,9 +37,10 @@ from social_django.utils import load_backend, load_strategy
 class RegisterView(GenericAPIView):
     """
     Register New User.
-    
+
     Takes AKGEC Mail And Passwords and Send OTP to Given Mail.
     """
+
     serializer_class = UserSerializer
     throttle_classes = [AnonRateThrottle]
 
@@ -72,12 +73,12 @@ class RegisterView(GenericAPIView):
         # Generate a random OTP and send a welcome email
         otp = randint(100000, 999999)
         expiry_time = timezone.now() + timezone.timedelta(minutes=5)
-        
+
         send_welcome_email.delay(otp, email)
-        
+
         OTP.objects.create(
-                user=user_profile, otp=otp, expiry_time=expiry_time, otp_type="email"
-            )
+            user=user_profile, otp=otp, expiry_time=expiry_time, otp_type="email"
+        )
 
         # Generate access and refresh tokens
         refresh = RefreshToken.for_user(user_profile)
@@ -94,9 +95,10 @@ class RegisterView(GenericAPIView):
 class ResendEmailVerificationView(APIView):
     """
     Register Mail (While Registering New User).
-    
+
     Resend OTP To The User's Mail.
     """
+
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     throttle_classes = [ResendOTPRateThrottle]
@@ -121,9 +123,8 @@ class ResendEmailVerificationView(APIView):
 
         send_welcome_email.delay(otp, request.user.email)
         OTP.objects.create(
-                user=request.user, otp=otp, expiry_time=expiry_time, otp_type="email"
-            )
-
+            user=request.user, otp=otp, expiry_time=expiry_time, otp_type="email"
+        )
 
         return Response(
             {"message": "OTP has been resent successfully"}, status=status.HTTP_200_OK
@@ -186,6 +187,7 @@ class SendPhoneOTPView(GenericAPIView):
 
     Takes Phone Number And Send OTP For Verification.
     """
+
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     throttle_classes = [ResendOTPRateThrottle]
@@ -223,8 +225,8 @@ class SendPhoneOTPView(GenericAPIView):
 
         send_mobile_otp.delay(otp, phone_number)
         OTP.objects.create(
-                user=request.user, otp=otp, expiry_time=expiry_time, otp_type="phone"
-            )
+            user=request.user, otp=otp, expiry_time=expiry_time, otp_type="phone"
+        )
 
         return Response(
             {"message": "OTP has been resent successfully"}, status=status.HTTP_200_OK
@@ -237,6 +239,7 @@ class PhoneOTPVerifyView(GenericAPIView):
 
     Takes OTP Sent to Mobile And Verifies it.
     """
+
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = OTPVerifySerializer
@@ -278,14 +281,13 @@ class PhoneOTPVerifyView(GenericAPIView):
 
 
 # Forget Password APIs
-
-
 class ForgetPasswordEmailSendOTPView(GenericAPIView):
     """
     Send Verification Code to Email.
 
     Takes Email And Send Verification Code to Reset Password.
     """
+
     serializer_class = EmailSerializer
     throttle_classes = [AnonRateThrottle]
 
@@ -315,12 +317,12 @@ class ForgetPasswordEmailSendOTPView(GenericAPIView):
         password_reset_token = generateToken(32)
         send_forget_password_email.delay(otp, email)
         ResetPasswordModel.objects.create(
-                user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
-            )
+            user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
+        )
         return Response(
-                {"message": "Email sent successfully", "token": password_reset_token},
-                status=status.HTTP_200_OK,
-            )
+            {"message": "Email sent successfully", "token": password_reset_token},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ForgetPasswordPhoneSendOTPView(GenericAPIView):
@@ -329,6 +331,7 @@ class ForgetPasswordPhoneSendOTPView(GenericAPIView):
 
     Takes Mobile Number And Send Verification Code to Reset Password.
     """
+
     serializer_class = PhoneNumberForgetPasswordSerializer
     throttle_classes = [AnonRateThrottle]
 
@@ -357,12 +360,13 @@ class ForgetPasswordPhoneSendOTPView(GenericAPIView):
         password_reset_token = generateToken(32)
         send_mobile_otp.delay(otp, phone_number)
         ResetPasswordModel.objects.create(
-                user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
-            )
+            user=user, otp=otp, expiry_time=expiry_time, token=password_reset_token
+        )
         return Response(
-                {"message": "OTP sent successfully", "token": password_reset_token},
-                status=status.HTTP_200_OK,
-            )
+            {"message": "OTP sent successfully", "token": password_reset_token},
+            status=status.HTTP_200_OK,
+        )
+
 
 class ForgetPasswordVerifyOTPView(GenericAPIView):
 
@@ -428,7 +432,9 @@ class UpdatePasswordView(GenericAPIView):
 
             # Checking If User Is Verified Or Not
             try:
-                resetPasswordObject = ResetPasswordModel.objects.get(token=token, verified=True)
+                resetPasswordObject = ResetPasswordModel.objects.get(
+                    token=token, verified=True
+                )
 
             except ResetPasswordModel.DoesNotExist:
 
@@ -460,15 +466,13 @@ class UpdatePasswordView(GenericAPIView):
 
 
 # Social Auth
-
-
-
 class ExchangeTokenView(GenericAPIView):
     """
     Google Oauth
-    
+
     Exchange Google Oauth2.0 Access Token With JWT Access And Refresh Tokens
     """
+
     serializer_class = SocialSerializer
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -477,7 +481,9 @@ class ExchangeTokenView(GenericAPIView):
         serializer = SocialSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         strategy = load_strategy(request)
-        backend = load_backend(strategy=strategy, name='google-oauth2', redirect_uri=None)
+        backend = load_backend(
+            strategy=strategy, name="google-oauth2", redirect_uri=None
+        )
 
         access_token = serializer.validated_data["access_token"]
 
@@ -498,10 +504,10 @@ class ExchangeTokenView(GenericAPIView):
                 {"error": "Scope Email Not Set"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         email = user.email
         akgec_validator = AKGECEmailValidator()
-        
+
         try:
             akgec_validator(email)
         except ValidationError as e:

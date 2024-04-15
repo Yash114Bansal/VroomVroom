@@ -21,7 +21,7 @@ class RegisterUserTests(APITestCase):
 
     def test_register_view_valid_data(self):
         url = reverse("register")
-        # Register New User With AKGEC Mail And Password
+        # Register New User With Mail And Password
         data = {"email": "test@akgec.ac.in", "password": "Password@123"}
 
         response = self.client.post(url, data, format="json")

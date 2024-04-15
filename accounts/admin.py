@@ -3,6 +3,7 @@ from import_export.admin import ImportExportMixin
 from import_export import resources
 from .models import UserProfile
 
+# Initializing base class for import/export data from admin panel
 class BaseImportExportAdmin(ImportExportMixin, admin.ModelAdmin):
     pass
 
