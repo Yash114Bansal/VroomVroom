@@ -42,7 +42,13 @@ class MyRideSerializer(serializers.ModelSerializer):
     driver_name = serializers.CharField(source="user.name", read_only=True)
     driver_phone = serializers.CharField(source="user.phone_number", read_only=True)
     driver_profile_pic = serializers.CharField(source="user.profile_picture", read_only=True)
-
+    is_paid = serializers.SerializerMethodField()
+    
     class Meta:
         model = RideModel
-        fields = ["id","seat_available","departure_location", "destination_location",'departure_time', 'fare','driver_name','driver_phone','driver_profile_pic']
+        fields = ["id","seat_available","departure_location", "destination_location",'departure_time', 'fare','driver_name','driver_phone','driver_profile_pic','is_paid']
+
+    def get_is_paid(self, instance):
+
+        user = self.context['request'].user
+        return user in instance.paid_by.all()

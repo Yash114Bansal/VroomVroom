@@ -9,12 +9,12 @@ def send_push_notification(title, body, users):
         "Authorization": f"key={settings.FCM_API_KEY}"
     }
     
-    for user in users:
-        title_formatted = title.replace("{name}", user.name)
-        body_formatted = body.replace("{name}", user.name)
-        if user.fcm_token:
+    for user in users :
+        title_formatted = title.replace("{name}", user['name'])
+        body_formatted = body.replace("{name}", user['name'])
+        if user['fcm_token']:
             data = {
-                "to": user.fcm_token,
+                "to": user['fcm_token'],
                 "notification": {
                     "title": title_formatted,
                     "body": body_formatted,
@@ -26,4 +26,4 @@ def send_push_notification(title, body, users):
                 
             except requests.RequestException as e:
                 
-                print(f"Error sending notification to {user.name}: {e}")
+                print(f"Error sending notification to {user['name']}: {e}")
