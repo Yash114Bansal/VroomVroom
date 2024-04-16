@@ -29,6 +29,7 @@ urlpatterns = [
     path('documents/',include("documents.urls")),
     path('rides/', include("rides.urls")),
     path('chats/', include("chat.urls")),
+    path('payments/', include("payments.urls")),
     
     # Swagger documentation URLs
     path("swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"),

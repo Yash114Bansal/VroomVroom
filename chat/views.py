@@ -6,6 +6,11 @@ from .models import Chat
 from .serializers import ChatSerializer
 
 class ChatHistoryAPIView(generics.ListAPIView):
+    """
+    List Previous Chats.
+    
+    API Endpoint to Get History of Chats
+    """
     serializer_class = ChatSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
