@@ -32,7 +32,7 @@ class PendingPaymentsListView(generics.ListAPIView):
         return queryset
 
 
-class PassengerPaymentRequestView(generics.CreateAPIView):
+class PassengerPaymentRequestView(APIView):
     """
     Request Cash Payment.
 
@@ -42,7 +42,7 @@ class PassengerPaymentRequestView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [BasePermission]
 
-    def create(self, request, ride_id, *args, **kwargs):
+    def post(self, request, ride_id, *args, **kwargs):
         passenger = request.user
 
         ride = get_object_or_404(RideModel, id=ride_id)
