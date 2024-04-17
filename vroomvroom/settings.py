@@ -12,7 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-DATABASE_URL = config('DATABASE_URL')
+POSTGRES_USER = config('POSTGRES_USER')
+POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
+POSTGRES_DB = config('POSTGRES_DB')
 OTP_API_KEY = config('OTP_API_KEY')
 
 cloudinary.config(
@@ -29,14 +31,13 @@ CLOUDINARY_STORAGE = {
 if 'test' not in sys.argv:
 
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 else:
     # Use the default storage for testing
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 
-ALLOWED_HOSTS = ["vroom-vroom-fyiv.onrender.com", "localhost", "127.0.0.1","192.168.225.10",config("ALLOWED_HOST", default=""),"8e28-223-228-211-41.ngrok-free.app"]
+
+ALLOWED_HOSTS = ["nginx", "localhost", "127.0.0.1",config("ALLOWED_HOST", default="")]
 
 INSTALLED_APPS = [
     'daphne',
@@ -107,15 +108,11 @@ ASGI_APPLICATION = 'vroomvroom.asgi.application'
 
 
 DATABASES = {
-    "default": dj_database_url.parse(DATABASE_URL,engine="django.contrib.gis.db.backends.postgis")
-}
-
-DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'admin',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
         'HOST': 'postgres',
         'PORT': '5432',
     }
@@ -164,8 +161,8 @@ CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 SIMPLE_JWT = {
     "USER_ID_FIELD": "email",
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'CHECK_REVOKE_TOKEN': True,
     'REVOKE_TOKEN_CLAIM': "check",
 }

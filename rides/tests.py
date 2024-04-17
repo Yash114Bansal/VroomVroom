@@ -68,7 +68,6 @@ class RideViewSetTest(APITestCase):
             'departure_time': '2024-01-30T12:00:00Z',
             'fare': 20.0
         }
-        print(self.url)
         response = self.client.put(f'{self.url}{ride.id}/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         ride.refresh_from_db()
