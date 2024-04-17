@@ -161,8 +161,8 @@ CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 SIMPLE_JWT = {
     "USER_ID_FIELD": "email",
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'CHECK_REVOKE_TOKEN': True,
     'REVOKE_TOKEN_CLAIM': "check",
 }
