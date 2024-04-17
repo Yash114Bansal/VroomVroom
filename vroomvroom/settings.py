@@ -31,11 +31,10 @@ CLOUDINARY_STORAGE = {
 if 'test' not in sys.argv:
 
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 else:
     # Use the default storage for testing
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+
 
 
 ALLOWED_HOSTS = ["vroom-vroom-fyiv.onrender.com", "localhost", "127.0.0.1","192.168.225.10",config("ALLOWED_HOST", default=""),"8e28-223-228-211-41.ngrok-free.app"]
