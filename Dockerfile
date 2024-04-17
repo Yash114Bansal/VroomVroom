@@ -12,16 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils\
     postgresql-client \
     postgis*
 
-RUN apt update && apt install postgis -y
-
-# Set GDAL library path
-ENV GDAL_LIBRARY_PATH=/usr/lib/libgdal.so
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 EXPOSE 8000
 
-# CMD ["sh", "-c", "python manage.py migrate && python manage.py test && python manage.py runserver 0.0.0.0:8000 &  celery -A vroomvroom worker -l info"]
-CMD ["sh", "-c", "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 vroomvroom.asgi:application &  celery -A vroomvroom worker -l info"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py test && daphne -b 0.0.0.0 -p 8000 vroomvroom.asgi:application &  celery -A vroomvroom worker -l info"]

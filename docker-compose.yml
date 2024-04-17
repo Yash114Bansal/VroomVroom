@@ -16,7 +16,17 @@ services:
       - REDIS_HOST=redis
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/static
+      - ./static:/usr/src/app/static
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - vroomvroom
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/src/app/static
 
   postgres:
     image: postgis/postgis:16-3.4-alpine

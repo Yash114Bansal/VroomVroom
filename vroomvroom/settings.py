@@ -37,7 +37,7 @@ else:
 
 
 
-ALLOWED_HOSTS = ["vroom-vroom-fyiv.onrender.com", "localhost", "127.0.0.1","192.168.225.10",config("ALLOWED_HOST", default=""),"8e28-223-228-211-41.ngrok-free.app"]
+ALLOWED_HOSTS = ["nginx", "localhost", "127.0.0.1",config("ALLOWED_HOST", default="")]
 
 INSTALLED_APPS = [
     'daphne',
