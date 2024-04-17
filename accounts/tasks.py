@@ -14,8 +14,9 @@ def send_push_notification(title, body, users):
     # Iterate over users
     for user in users:
         # Format title and body with user's name
-        title_formatted = title.replace("{name}", user["name"])
-        body_formatted = body.replace("{name}", user["name"])
+        if user["name"]:
+            title_formatted = title.replace("{name}", user["name"])
+            body_formatted = body.replace("{name}", user["name"])
 
         # Check if user has FCM token
         if user["fcm_token"]:
