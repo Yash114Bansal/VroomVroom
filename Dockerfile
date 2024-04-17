@@ -18,4 +18,9 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py test && daphne -b 0.0.0.0 -p 8000 vroomvroom.asgi:application &  celery -A vroomvroom worker -l info"]
+CMD ["sh", "-c", "\
+    python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    python manage.py test && \
+    daphne -b 0.0.0.0 -p 8000 vroomvroom.asgi:application & \
+    celery -A vroomvroom worker -l info"]
