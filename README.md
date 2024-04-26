@@ -11,6 +11,8 @@ Vroom Vroom is a car-sharing application designed specifically for AKGEC College
 - **Cash Payment Recording**: Recording of cash payments for rides, providing transparency and accountability.
 - **Real-Time Drive Matching**: Utilizing PostGIS for efficient drive matching based on location proximity and timing.
 - **Document Verification**: Users can complete the document verification process by submitting required identification documents, ensuring the safety and security of all participants.
+- **Celery Integration**: VroomVroom leverages Celery for asynchronous task execution. This allows tasks like sending emails and push notifications to be processed in the background, improving responsiveness for users and ensuring critical functionalities are not blocked.
+- **Documented API Endpoint with Swagger**: VroomVroom's API endpoints are documented using Swagger, providing developers with clear and comprehensive documentation for easy integration and usage.
 
 ## Screenshots
 
@@ -36,10 +38,13 @@ To run Vroom Vroom locally, follow these steps:
 - `SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`: Google OAuth2 client ID for social authentication.
 - `SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET`: Google OAuth2 client secret.
 - `FCM_API_KEY`: API key for Firebase Cloud Messaging (FCM) for push notifications.
-
+- `POSTGRES_USER`: Username for connecting to the Postgres database.
+- `POSTGRES_PASSWORD`: Password for connecting to the Postgres database.
+- `POSTGRES_DB`: Name of the Postgres database to use.
 
 4. Set up the database: `python manage.py migrate`
 5. Run the development server: `python manage.py runserver`
+6. Open a new terminal and start the Celery worker: `celery -A vroomvroom worker -l info`
 
 Make sure to configure your environment variables, database settings, and other configurations as needed.
 
@@ -60,7 +65,7 @@ To run Vroom Vroom using Docker, follow these steps:
 
 1. Ensure Docker and Docker Compose are installed on your system.
 2. Clone the repository: `git clone https://github.com/Yash114Bansal/VroomVroom/`
-3. Navigate to the project directory: `cd vroom_vroom`
+3. Navigate to the project directory: `cd VroomVroom`
 4. Create a `.env` file in the project root directory with the content mentioned above.
 5. Build and start the containers: `docker-compose up --build`
 
