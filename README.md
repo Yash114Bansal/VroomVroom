@@ -1,6 +1,8 @@
-# Vroom Vroom - Car Sharing App
+# VroomVroom - Car Sharing App
 
-Vroom Vroom is a car-sharing application designed specifically for AKGEC College, providing a convenient way for students and faculty to share rides within the campus and nearby areas. With features like real-time location sharing, push notifications, and secure authentication, Vroom Vroom aims to streamline the process of carpooling and enhance the commuting experience for everyone at AKGEC.
+![Cover](docs/cover.png)
+
+VroomVroom is a car-sharing application designed specifically for AKGEC College, providing a convenient way for students and faculty to share rides within the campus and nearby areas. With features like real-time location sharing, push notifications, and secure authentication, VroomVroom aims to streamline the process of carpooling and enhance the commuting experience for everyone at AKGEC.
 
 ## Key Features
 
@@ -20,7 +22,7 @@ Vroom Vroom is a car-sharing application designed specifically for AKGEC College
 
 ## Installation
 
-To run Vroom Vroom locally, follow these steps:
+To run VroomVroom locally, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/Yash114Bansal/VroomVroom/`
 2. Install dependencies: `pip install -r requirements.txt`
@@ -61,7 +63,7 @@ Document verification ensures the safety and security of all users by validating
 
 ## Docker Installation
 
-To run Vroom Vroom using Docker, follow these steps:
+To run VroomVroom using Docker, follow these steps:
 
 1. Ensure Docker and Docker Compose are installed on your system.
 2. Clone the repository: `git clone https://github.com/Yash114Bansal/VroomVroom/`
@@ -69,9 +71,14 @@ To run Vroom Vroom using Docker, follow these steps:
 4. Create a `.env` file in the project root directory with the content mentioned above.
 5. Build and start the containers: `docker-compose up --build`
 
+## Frontend
+
+The frontend for this application is developed by Paras Upadhayay ([Pudv95](https://github.com/Pudv95)). You can find the frontend repository at [VroomVroom](https://github.com/Pudv95/vroom_vroom/).
+
+
 ## Contributing
 
-Contributions to Vroom Vroom are welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
+Contributions to VroomVroom are welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
 ## License
 
