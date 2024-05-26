@@ -5,10 +5,6 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # binutils \
-    # libproj-dev \
-    # gdal-bin \
-    # libgdal-dev \
     postgresql-client \
     postgis* \
     supervisor
