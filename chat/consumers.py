@@ -6,7 +6,7 @@ from accounts.models import UserProfile
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rides.models import RideModel
-from .models import Chat
+from .tasks import add_message_to_queue
 
 
 class LocationConsumer(AsyncWebsocketConsumer):
@@ -200,7 +200,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps({"message": message, "user": user_email}))
         if user_email != self.email:
-            await self.create_chat_model(user_email, self.email, message)
+            add_message_to_queue.delay(user_email, self.email, message)
 
     @database_sync_to_async
     def get_user_from_access_token(self, token):
@@ -215,10 +215,3 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_user_email(self, user):
         return user.email
 
-    @database_sync_to_async
-    def create_chat_model(self, sender, reciever, content):
-        Chat.objects.create(
-            sender=UserProfile.objects.get(email=sender),
-            receiver=UserProfile.objects.get(email=reciever),
-            content=content,
-        )
