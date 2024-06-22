@@ -12,9 +12,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-POSTGRES_USER = config('POSTGRES_USER')
-POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
-POSTGRES_DB = config('POSTGRES_DB')
 OTP_API_KEY = config('OTP_API_KEY')
 
 cloudinary.config(
@@ -106,16 +103,10 @@ AUTHENTICATION_BACKENDS = (
 # WSGI_APPLICATION = 'vroomvroom.wsgi.application'
 ASGI_APPLICATION = 'vroomvroom.asgi.application'
 
+DATABASE_URL = config("DATABASE_URL")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': POSTGRES_DB,
-        'USER': POSTGRES_USER,
-        'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': 'postgres',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.parse(DATABASE_URL, engine='django.contrib.gis.db.backends.postgis')
 }
 
 AUTH_PASSWORD_VALIDATORS = [
